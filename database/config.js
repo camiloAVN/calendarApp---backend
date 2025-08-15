@@ -2,30 +2,11 @@ const mongoose = require('mongoose');
 
 const dbConnection = async() => {
     try {
-        // Debug completo para Railway
-        console.log('🔍 === DEBUG INFO ===');
-        console.log('NODE_ENV:', process.env.NODE_ENV);
-        console.log('PORT:', process.env.PORT);
-        console.log('DB_CNN definido:', !!process.env.DB_CNN);
-        console.log('SECRET_JWT_SEED definido:', !!process.env.SECRET_JWT_SEED);
-        
-        if (process.env.DB_CNN) {
-            console.log('DB_CNN preview:', process.env.DB_CNN.substring(0, 30) + '...');
-        } else {
-            console.error('❌ DB_CNN no está definido!');
-            throw new Error('Variable DB_CNN no configurada');
-        }
-
-        console.log('🔄 Intentando conectar a MongoDB...');
+    
         
         await mongoose.connect(process.env.DB_CNN);
         
         console.log('✅ Base de datos conectada exitosamente');
-        
-        // Test rápido de la conexión
-        const adminDb = mongoose.connection.db.admin();
-        const result = await adminDb.ping();
-        console.log('✅ Ping a BD exitoso:', result);
 
     } catch (error) {
         console.error('❌ === ERROR COMPLETO ===');
