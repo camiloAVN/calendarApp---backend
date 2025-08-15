@@ -260,9 +260,6 @@ This backend is designed to work with a React frontend application. The frontend
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
-
-**Your Name** - [Your GitHub](https://github.com/yourusername)
 
 ## 🙏 Acknowledgments
 
