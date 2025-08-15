@@ -1,6 +1,7 @@
 const expresss = require('express');
 const { dbConnection } = require('./database/config');
 const cors = require('cors');
+const { generalLimiter } = require('./middlewares/rate-limit');
 require('dotenv').config();
 
 //console.log(process.env);
@@ -13,6 +14,9 @@ dbConnection();
 
 //CORS
 app.use(cors())
+
+// Limitar peticiones generales
+app.use('/api', generalLimiter);
 
 //directorio publico
 app.use(expresss.static('public'));

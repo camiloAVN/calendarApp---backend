@@ -53,29 +53,53 @@ const crearUsuario = async(req, res = response) => {
 const loginUsuario = async(req, res = response) => {
 
     const {email, password} = req.body;
+    const clientIP = req.ip || req.connection.remoteAddress;
 
     try {
         const usuario = await Usuario.findOne({ email });
 
         if (!usuario) {
+            console.warn(`Login fallido para email inexistente: ${email} desde IP: ${clientIP}`);
             return res.status(400).json({
                 ok: false,
                 msg: 'El usuario o contraseña no son correctos'
             });
         }
+        
+        // Verificar si está bloqueado
+        if (usuario.isLocked) {
+            console.warn(`Intento de login en cuenta bloqueada: ${email} desde IP: ${clientIP}`);
+            return res.status(423).json({
+                ok: false,
+                msg: 'Cuenta temporalmente bloqueada por múltiples intentos fallidos'
+            });
+        }
+
 
         // confirmar los passwords
         const validPassword = bcrypt.compareSync(password, usuario.password);
 
         if (!validPassword) {
+            await usuario.incLoginAttempts();
+            console.warn(`Password incorrecto para: ${email} desde IP: ${clientIP}`);
+
             return res.status(400).json({
                 ok: false,
                 msg: 'El usuario o contraseña no son correctos'
             });
         }
 
+        // Reset intentos exitosos
+        if (usuario.loginAttempts > 0) {
+            await usuario.updateOne({
+                $unset: { loginAttempts: 1, lockUntil: 1 }
+            });
+        }
+
          // generar JWT
         const token = await generarJWT(usuario.id, usuario.name);
+
+        console.info(`Login exitoso para: ${email} desde IP: ${clientIP}`);
 
         res.json({
             ok:true,
