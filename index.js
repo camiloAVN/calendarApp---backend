@@ -20,6 +20,7 @@ app.use(expresss.static('public'));
 app.use(expresss.json());
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/events', require('./routes/events'));
 
 
 // escuchar peticiones
